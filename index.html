@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FakeStore Categories</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .category {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f8f8f8;
+        }
+        .card {
+            display: inline-block;
+            width: 200px;
+            margin: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>FakeStore Categories</h1>
+    <div class="container" id="categoryContainer"></div>
+
+    <script>
+        let categories = {
+            mens: [],
+            womens: [],
+            jewel: [],
+            ele: []
+        };
+
+        async function fetchProducts() {
+            try {
+                let response = await fetch('https://fakestoreapi.com/products');
+                let products = await response.json();
+
+                // Categorize products using an object and for...in loop
+                for (let index in products) {
+                    let product = products[index];
+
+                    if (product.category === "men's clothing") {
+                        categories.mens.push(product);
+                    } else if (product.category === "women's clothing") {
+                        categories.womens.push(product);
+                    } else if (product.category === "jewelery") {
+                        categories.jewel.push(product);
+                    } else if (product.category === "electronics") {
+                        categories.ele.push(product);
+                    }
+                }
+
+                displayCategories();
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        }
+
+        function displayCategories() {
+            let container = document.getElementById("categoryContainer");
+            container.innerHTML = "";
+
+            for (let key in categories) {
+                let products = categories[key];
+                if (products.length > 0) {
+                    let categoryDiv = document.createElement("div");
+                    categoryDiv.classList.add("category");
+                    categoryDiv.innerHTML = `<h2>${key.toUpperCase()}</h2>`;
+
+                    categoryDiv.innerHTML += products.map(product => `
+                        <div class="card">
+                            <img src="${product.image}" alt="${product.title}">
+                            <h3>${product.title}</h3>
+                            <p>$${product.price}</p>
+                        </div>
+                    `).join('');
+
+                    container.appendChild(categoryDiv);
+                }
+            }
+        }
+
+        fetchProducts();
+    </script>
+
+</body>
+</html>
